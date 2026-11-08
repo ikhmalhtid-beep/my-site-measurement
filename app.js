@@ -43,11 +43,30 @@ function draw(){if(!$("work")||$("work").hidden)return;let w=canvas.clientWidth,
 let left=(-offset.x)/scale,top=(-offset.y)/scale,right=(w-offset.x)/scale,bottom=(h-offset.y)/scale;
 let step=25,x0=Math.floor(left/step)*step,y0=Math.floor(top/step)*step;
 for(let x=x0;x<=right+step;x+=step){ctx.beginPath();ctx.moveTo(x,top-step);ctx.lineTo(x,bottom+step);ctx.stroke()}
-for(let y=y0;y<=bottom+step;y+=step){ctx.beginPath();ctx.moveTo(left-step,y);ctx.lineTo(right+step,y);ctx.stroke()}floor().walls.forEach((a,wi)=>{ctx.strokeStyle=(selected&&selected.kind==="wall"&&selected.index===wi)?"#e07a22":"#202938";ctx.lineWidth=2/scale;ctx.beginPath();ctx.moveTo(a.a.x,a.a.y);ctx.lineTo(a.b.x,a.b.y);ctx.stroke();ctx.fillStyle="#303d50";ctx.font=`${12/scale}px system-ui`;ctx.fillText(fmt(a.len),(a.a.x+a.b.x)/2,(a.a.y+a.b.y)/2-7/scale)});floor().objects.forEach((o,oi)=>{ctx.save();const objectSelected=!!(selected&&selected.kind==="object"&&selected.index===oi);const objectColor=objectSelected?"#22D3EE":"#263548";ctx.strokeStyle=objectColor;ctx.translate(o.x,o.y);ctx.rotate(o.angle||0);ctx.strokeStyle=objectColor;ctx.fillStyle=objectColor;ctx.lineWidth=2/scale;if(o.type==="door"){let hinge=o.hinge==="right"?o.w/2:-o.w/2;ctx.beginPath();ctx.moveTo(hinge,0);ctx.lineTo(hinge,o.swing==="out"?-o.w:o.w);ctx.stroke();ctx.beginPath();ctx.arc(hinge,0,o.w,o.swing==="out"?-Math.PI/2:0,o.swing==="out"?0:Math.PI/2);ctx.stroke()}else if(o.type==="window"){ctx.beginPath();ctx.moveTo(-o.w/2,-3);ctx.lineTo(o.w/2,-3);ctx.moveTo(-o.w/2,3);ctx.lineTo(o.w/2,3);for(let i=1;i<o.panels;i++){let x=-o.w/2+o.w*i/o.panels;ctx.moveTo(x,-5);ctx.lineTo(x,5)}ctx.stroke()}else if(o.type==="stair"){ctx.strokeRect(-o.w/2,-o.l/2,o.w,o.l);for(let y=-o.l/2+15;y<o.l/2;y+=15){ctx.beginPath();ctx.moveTo(-o.w/2,y);ctx.lineTo(o.w/2,y);ctx.stroke()}}else{ctx.fillStyle="#263548";ctx.fillText(o.text,0,0)}if(objectSelected){ctx.save();ctx.strokeStyle="#22D3EE";ctx.lineWidth=2.5/scale;ctx.setLineDash([4/scale,3/scale]);if(o.type==="door")ctx.strokeRect(-o.w/2-8,-o.w-8,o.w+16,o.w+16);else if(o.type==="window")ctx.strokeRect(-o.w/2-8,-12,o.w+16,24);else ctx.strokeRect(-o.w/2-8,-(o.l||o.w)/2-8,o.w+16,(o.l||o.w)+16);ctx.setLineDash([]);ctx.restore()}ctx.restore()});
+for(let y=y0;y<=bottom+step;y+=step){ctx.beginPath();ctx.moveTo(left-step,y);ctx.lineTo(right+step,y);ctx.stroke()}floor().walls.forEach((a,wi)=>{
+ ctx.strokeStyle=(selected&&selected.kind==="wall"&&selected.index===wi)?"#e07a22":"#202938";
+ ctx.lineWidth=2/scale;
+ const dx=a.b.x-a.a.x,dy=a.b.y-a.a.y,len=Math.hypot(dx,dy)||1,ux=dx/len,uy=dy/len;
+ const gaps=floor().objects.filter(o=>o.type==="door"&&o.wallIndex===wi).map(o=>{
+  const half=(o.w||0)/2,center=(o.t??0)*len;
+  return [Math.max(0,center-half),Math.min(len,center+half)];
+ }).sort((x,y)=>x[0]-y[0]);
+ let cursor=0;
+ gaps.forEach(g=>{if(g[0]>cursor){ctx.beginPath();ctx.moveTo(a.a.x+ux*cursor,a.a.y+uy*cursor);ctx.lineTo(a.a.x+ux*g[0],a.a.y+uy*g[0]);ctx.stroke()}cursor=Math.max(cursor,g[1])});
+ if(cursor<len){ctx.beginPath();ctx.moveTo(a.a.x+ux*cursor,a.a.y+uy*cursor);ctx.lineTo(a.b.x,a.b.y);ctx.stroke()}
+ ctx.fillStyle="#303d50";ctx.font=`${12/scale}px system-ui`;ctx.fillText(fmt(a.len),(a.a.x+a.b.x)/2,(a.a.y+a.b.y)/2-7/scale)
+});floor().objects.forEach((o,oi)=>{ctx.save();const objectSelected=!!(selected&&selected.kind==="object"&&selected.index===oi);const objectColor=objectSelected?"#22D3EE":"#263548";ctx.strokeStyle=objectColor;ctx.translate(o.x,o.y);ctx.rotate(o.angle||0);ctx.strokeStyle=objectColor;ctx.fillStyle=objectColor;ctx.lineWidth=2/scale;if(o.type==="door"){let hinge=o.hinge==="right"?o.w/2:-o.w/2;ctx.beginPath();ctx.moveTo(hinge,0);ctx.lineTo(hinge,o.swing==="out"?-o.w:o.w);ctx.stroke();ctx.beginPath();ctx.arc(hinge,0,o.w,o.swing==="out"?-Math.PI/2:0,o.swing==="out"?0:Math.PI/2);ctx.stroke()}else if(o.type==="window"){
+ // Window symbol uses two parallel lines 4 inches apart (101.6 mm overall).
+ const halfGap=50.8;
+ ctx.beginPath();ctx.moveTo(-o.w/2,-halfGap);ctx.lineTo(o.w/2,-halfGap);
+ ctx.moveTo(-o.w/2,halfGap);ctx.lineTo(o.w/2,halfGap);
+ for(let i=1;i<o.panels;i++){let x=-o.w/2+o.w*i/o.panels;ctx.moveTo(x,-halfGap);ctx.lineTo(x,halfGap)}
+ ctx.stroke()
+}else if(o.type==="stair"){ctx.strokeRect(-o.w/2,-o.l/2,o.w,o.l);for(let y=-o.l/2+15;y<o.l/2;y+=15){ctx.beginPath();ctx.moveTo(-o.w/2,y);ctx.lineTo(o.w/2,y);ctx.stroke()}}else{ctx.fillStyle="#263548";ctx.fillText(o.text,0,0)}if(objectSelected){ctx.save();ctx.strokeStyle="#22D3EE";ctx.lineWidth=2.5/scale;ctx.setLineDash([4/scale,3/scale]);if(o.type==="door")ctx.strokeRect(-o.w/2-8,-o.w-8,o.w+16,o.w+16);else if(o.type==="window")ctx.strokeRect(-o.w/2-8,-58.8,o.w+16,117.6);else ctx.strokeRect(-o.w/2-8,-(o.l||o.w)/2-8,o.w+16,(o.l||o.w)+16);ctx.setLineDash([]);ctx.restore()}ctx.restore()});
 if(doorPositioning&&doorPreview){ctx.save();ctx.translate(doorPreview.x,doorPreview.y);ctx.rotate(doorPreview.angle||0);ctx.strokeStyle="#22D3EE";ctx.lineWidth=3/scale;let half=doorPreview.w/2,hinge=doorPreview.hinge==="right"?half:-half;ctx.beginPath();ctx.moveTo(hinge,0);ctx.lineTo(hinge,doorPreview.swing==="out"?-doorPreview.w:doorPreview.w);ctx.stroke();ctx.beginPath();ctx.arc(hinge,0,doorPreview.w,doorPreview.swing==="out"?-Math.PI/2:0,doorPreview.swing==="out"?0:Math.PI/2);ctx.stroke();ctx.restore()}
 if(draft){ctx.strokeStyle="#2676c8";ctx.setLineDash([5,4]);ctx.beginPath();ctx.moveTo(draft.a.x,draft.a.y);ctx.lineTo(draft.b.x,draft.b.y);ctx.stroke();ctx.setLineDash([])}ctx.restore();$("summary").textContent="Rooms: 0 · Total area: 0.00 sqft (room detection in next build step)"}function screenPoint(e){let r=canvas.getBoundingClientRect();return{x:e.clientX-r.left,y:e.clientY-r.top}}
 function point(e){let p=screenPoint(e);return{x:(p.x-offset.x)/scale,y:(p.y-offset.y)/scale}}
-function clampScale(v){return Math.max(.2,Math.min(5,v))}
+function clampScale(v){return Math.max(.05,Math.min(5,v))}
 function zoomAt(factor,cx=canvas.clientWidth/2,cy=canvas.clientHeight/2){
 let old=scale,next=clampScale(scale*factor);if(next===old)return;
 let wx=(cx-offset.x)/old,wy=(cy-offset.y)/old;scale=next;offset.x=cx-wx*scale;offset.y=cy-wy*scale;draw();

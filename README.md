@@ -74,3 +74,10 @@ The parser converts the accepted input to millimetres internally and rejects inv
 - Release to finalize the door placement.
 - After selecting an installed door, drag to either side to change inward/outward swing. Its position on the wall stays fixed.
 - Window placement/edit remains unchanged.
+
+
+## V2.3.6 door opening, window symbol and zoom range
+- Wall line is interrupted across each installed door width, leaving a clear opening.
+- Window symbol parallel lines are spaced 4 inches apart (101.6 mm overall).
+- Selected window outline covers the expanded 4-inch symbol.
+- Minimum zoom scale reduced from 0.20 to 0.05 for farther zoom-out.
