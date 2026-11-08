@@ -1,4 +1,23 @@
-(()=>{const $=id=>document.getElementById(id),canvas=$("plan"),ctx=canvas.getContext("2d");let projects=JSON.parse(localStorage.getItem("msm_v2")||"[]"),project=null,fi=0,tool="select",walls=[],objects=[],draft=null,pending=null,undo=[],scale=1,offset={x:0,y:0},selected=null,history=[];const save=()=>{localStorage.setItem("msm_v2",JSON.stringify(projects))};const floor=()=>project.floors[fi];function render(){ $("projects").innerHTML="";projects.forEach(p=>{let d=document.createElement("div");d.className="card";d.innerHTML=`<b>${esc(p.name)}</b><p class=muted>${esc(p.client||"")}</p><small>${p.floors.length} floor(s)</small>`;d.onclick=()=>open(p.id);$("projects").append(d)})}function esc(s){return String(s||"").replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]))}function open(id){project=projects.find(p=>p.id===id);fi=0;$("home").hidden=true;$("work").hidden=false;$("title").textContent=project.name;tabs();resize()}function tabs(){$("floorTabs").innerHTML="";project.floors.forEach((f,i)=>{let b=document.createElement("button");b.textContent=f.name;b.className=i===fi?"primary":"";b.onclick=()=>{fi=i;tabs();draw()};$("floorTabs").append(b)})}function resize(){let r=canvas.getBoundingClientRect(),d=window.devicePixelRatio||1;canvas.width=r.width*d;canvas.height=r.height*d;ctx.setTransform(d,0,0,d,0,0);draw()}function parse(s){let m=s.trim().match(/^(?:(\\d+(?:\\.\\d+)?)\\s*')?\\s*(?:(\\d+(?:\\.\\d+)?)\\s*\\"?\\s*)?$/);if(!m)return NaN;return ((+(m[1]||0))*12+(+(m[2]||0)))*25.4}function fmt(mm){let n=mm/25.4,f=Math.floor(n/12),i=Math.round((n-f*12)*16)/16;if(i>=12){f++;i=0}return f+"' "+i+'"'}function draw(){if(!$("work")||$("work").hidden)return;let w=canvas.clientWidth,h=canvas.clientHeight;ctx.clearRect(0,0,w,h);ctx.save();ctx.translate(offset.x,offset.y);ctx.scale(scale,scale);ctx.strokeStyle="#e9edf2";ctx.lineWidth=1/scale;
+(()=>{const $=id=>document.getElementById(id),canvas=$("plan"),ctx=canvas.getContext("2d");let projects=JSON.parse(localStorage.getItem("msm_v2")||"[]"),project=null,fi=0,tool="select",walls=[],objects=[],draft=null,pending=null,undo=[],scale=1,offset={x:0,y:0},selected=null,history=[];const save=()=>{localStorage.setItem("msm_v2",JSON.stringify(projects))};const floor=()=>project.floors[fi];function render(){ $("projects").innerHTML="";projects.forEach(p=>{let d=document.createElement("div");d.className="card";d.innerHTML=`<b>${esc(p.name)}</b><p class=muted>${esc(p.client||"")}</p><small>${p.floors.length} floor(s)</small>`;d.onclick=()=>open(p.id);$("projects").append(d)})}function esc(s){return String(s||"").replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]))}function open(id){project=projects.find(p=>p.id===id);fi=0;$("home").hidden=true;$("work").hidden=false;$("title").textContent=project.name;tabs();resize()}function tabs(){$("floorTabs").innerHTML="";project.floors.forEach((f,i)=>{let b=document.createElement("button");b.textContent=f.name;b.className=i===fi?"primary":"";b.onclick=()=>{fi=i;tabs();draw()};$("floorTabs").append(b)})}function resize(){let r=canvas.getBoundingClientRect(),d=window.devicePixelRatio||1;canvas.width=r.width*d;canvas.height=r.height*d;ctx.setTransform(d,0,0,d,0,0);draw()}function parse(s){
+ let v=String(s??"").trim().replace(/[′’]/g,"'").replace(/[″“”]/g,'"').replace(/,/g,"");
+ if(!v)return NaN;
+ const num=String.raw`(?:\d+(?:\.\d+)?|\d+\s+\d+\/\d+|\d+-\d+\/\d+|\d+\/\d+)`;
+ const m=v.match(new RegExp(String.raw`^(?:(\d+(?:\.\d+)?)\s*')?\s*(${num})?\s*"?$`));
+ if(!m || (!m[1] && !m[2]))return NaN;
+ const toNumber=(x)=>{
+  if(!x)return 0;
+  x=x.trim();
+  let z=x.match(/^(\d+)\s+(\d+)\/(\d+)$/) || x.match(/^(\d+)-(\d+)\/(\d+)$/);
+  if(z){let d=Number(z[3]);return d?Number(z[1])+Number(z[2])/d:NaN;}
+  z=x.match(/^(\d+)\/(\d+)$/);
+  if(z){let d=Number(z[2]);return d?Number(z[1])/d:NaN;}
+  return Number(x);
+ };
+ const feet=Number(m[1]||0), inches=toNumber(m[2]);
+ if(!Number.isFinite(feet)||!Number.isFinite(inches)||inches>=12)return NaN;
+ return (feet*12+inches)*25.4;
+}
+function fmt(mm){let n=mm/25.4,f=Math.floor(n/12),i=Math.round((n-f*12)*16)/16;if(i>=12){f++;i=0}return f+"' "+i+'"'}function draw(){if(!$("work")||$("work").hidden)return;let w=canvas.clientWidth,h=canvas.clientHeight;ctx.clearRect(0,0,w,h);ctx.save();ctx.translate(offset.x,offset.y);ctx.scale(scale,scale);ctx.strokeStyle="#e9edf2";ctx.lineWidth=1/scale;
 let left=(-offset.x)/scale,top=(-offset.y)/scale,right=(w-offset.x)/scale,bottom=(h-offset.y)/scale;
 let step=25,x0=Math.floor(left/step)*step,y0=Math.floor(top/step)*step;
 for(let x=x0;x<=right+step;x+=step){ctx.beginPath();ctx.moveTo(x,top-step);ctx.lineTo(x,bottom+step);ctx.stroke()}

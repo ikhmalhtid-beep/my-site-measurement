@@ -39,3 +39,8 @@ Deploy with GitHub Pages: Settings → Pages → Deploy from a branch → main �
 - Internal geometry uses millimetres; input/display remains ft'inch; area remains sqft.
 - Door/window can be selected and edited for width and position along its host wall.
 - Door supports hinge side and inward/outward swing; window supports 1–6 panels.
+
+
+## V2.3.1 dimension input parser fix
+Accepted examples: `12' 6"`, `12'`, `6"`, `3' 0"`, `10' 3.5"`, `3' 6 1/2"`, `6 1/2"`, and typographic foot/inch marks.
+The parser converts the accepted input to millimetres internally and rejects invalid inch values of 12 or more.
