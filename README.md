@@ -44,3 +44,11 @@ Deploy with GitHub Pages: Settings → Pages → Deploy from a branch → main �
 ## V2.3.1 dimension input parser fix
 Accepted examples: `12' 6"`, `12'`, `6"`, `3' 0"`, `10' 3.5"`, `3' 6 1/2"`, `6 1/2"`, and typographic foot/inch marks.
 The parser converts the accepted input to millimetres internally and rejects invalid inch values of 12 or more.
+
+
+## V2.3.2 parser rebuilt and tested
+- Rebuilt the feet/inches parser without dynamically constructed regular expressions.
+- Supports feet, inches, decimals, and fractional inches (e.g. `12' 6"`, `6"`, `3' 6 1/2"`).
+- Bare numeric values are interpreted as feet.
+- Rejects invalid inch values of 12 or more.
+- Automated parser test cases passed.
