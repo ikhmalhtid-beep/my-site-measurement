@@ -60,3 +60,9 @@ The parser converts the accepted input to millimetres internally and rejects inv
 - Objects are tested before their host wall, so tapping a door/window on a wall selects the object first.
 - Selected objects receive an orange dashed selection outline.
 - Selection hit areas include a touch-friendly minimum tolerance that adapts to zoom.
+
+
+## V2.3.4 selection color
+- Selected object symbols change to cyan (#22D3EE).
+- Selected symbol line weight is increased for clearer visual feedback.
+- The selection outline also uses cyan.
