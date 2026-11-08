@@ -52,3 +52,11 @@ The parser converts the accepted input to millimetres internally and rejects inv
 - Bare numeric values are interpreted as feet.
 - Rejects invalid inch values of 12 or more.
 - Automated parser test cases passed.
+
+
+## V2.3.3 object selection improvement
+- Door selection hit-area includes the door leaf, opening line and swing arc.
+- Window selection hit-area covers the complete window symbol.
+- Objects are tested before their host wall, so tapping a door/window on a wall selects the object first.
+- Selected objects receive an orange dashed selection outline.
+- Selection hit areas include a touch-friendly minimum tolerance that adapts to zoom.

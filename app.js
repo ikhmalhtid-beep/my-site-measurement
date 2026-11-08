@@ -42,7 +42,7 @@
 let left=(-offset.x)/scale,top=(-offset.y)/scale,right=(w-offset.x)/scale,bottom=(h-offset.y)/scale;
 let step=25,x0=Math.floor(left/step)*step,y0=Math.floor(top/step)*step;
 for(let x=x0;x<=right+step;x+=step){ctx.beginPath();ctx.moveTo(x,top-step);ctx.lineTo(x,bottom+step);ctx.stroke()}
-for(let y=y0;y<=bottom+step;y+=step){ctx.beginPath();ctx.moveTo(left-step,y);ctx.lineTo(right+step,y);ctx.stroke()}floor().walls.forEach((a,wi)=>{ctx.strokeStyle=(selected&&selected.kind==="wall"&&selected.index===wi)?"#e07a22":"#202938";ctx.lineWidth=2/scale;ctx.beginPath();ctx.moveTo(a.a.x,a.a.y);ctx.lineTo(a.b.x,a.b.y);ctx.stroke();ctx.fillStyle="#303d50";ctx.font=`${12/scale}px system-ui`;ctx.fillText(fmt(a.len),(a.a.x+a.b.x)/2,(a.a.y+a.b.y)/2-7/scale)});floor().objects.forEach((o,oi)=>{ctx.save();ctx.strokeStyle=(selected&&selected.kind==="object"&&selected.index===oi)?"#e07a22":"#263548";ctx.translate(o.x,o.y);ctx.rotate(o.angle||0);ctx.strokeStyle="#263548";ctx.lineWidth=2/scale;if(o.type==="door"){let hinge=o.hinge==="right"?o.w/2:-o.w/2;ctx.beginPath();ctx.moveTo(hinge,0);ctx.lineTo(hinge,o.swing==="out"?-o.w:o.w);ctx.stroke();ctx.beginPath();ctx.arc(hinge,0,o.w,o.swing==="out"?-Math.PI/2:0,o.swing==="out"?0:Math.PI/2);ctx.stroke()}else if(o.type==="window"){ctx.beginPath();ctx.moveTo(-o.w/2,-3);ctx.lineTo(o.w/2,-3);ctx.moveTo(-o.w/2,3);ctx.lineTo(o.w/2,3);for(let i=1;i<o.panels;i++){let x=-o.w/2+o.w*i/o.panels;ctx.moveTo(x,-5);ctx.lineTo(x,5)}ctx.stroke()}else if(o.type==="stair"){ctx.strokeRect(-o.w/2,-o.l/2,o.w,o.l);for(let y=-o.l/2+15;y<o.l/2;y+=15){ctx.beginPath();ctx.moveTo(-o.w/2,y);ctx.lineTo(o.w/2,y);ctx.stroke()}}else{ctx.fillStyle="#263548";ctx.fillText(o.text,0,0)}ctx.restore()});if(draft){ctx.strokeStyle="#2676c8";ctx.setLineDash([5,4]);ctx.beginPath();ctx.moveTo(draft.a.x,draft.a.y);ctx.lineTo(draft.b.x,draft.b.y);ctx.stroke();ctx.setLineDash([])}ctx.restore();$("summary").textContent="Rooms: 0 · Total area: 0.00 sqft (room detection in next build step)"}function screenPoint(e){let r=canvas.getBoundingClientRect();return{x:e.clientX-r.left,y:e.clientY-r.top}}
+for(let y=y0;y<=bottom+step;y+=step){ctx.beginPath();ctx.moveTo(left-step,y);ctx.lineTo(right+step,y);ctx.stroke()}floor().walls.forEach((a,wi)=>{ctx.strokeStyle=(selected&&selected.kind==="wall"&&selected.index===wi)?"#e07a22":"#202938";ctx.lineWidth=2/scale;ctx.beginPath();ctx.moveTo(a.a.x,a.a.y);ctx.lineTo(a.b.x,a.b.y);ctx.stroke();ctx.fillStyle="#303d50";ctx.font=`${12/scale}px system-ui`;ctx.fillText(fmt(a.len),(a.a.x+a.b.x)/2,(a.a.y+a.b.y)/2-7/scale)});floor().objects.forEach((o,oi)=>{ctx.save();const objectSelected=!!(selected&&selected.kind==="object"&&selected.index===oi);ctx.strokeStyle=objectSelected?"#e07a22":"#263548";ctx.translate(o.x,o.y);ctx.rotate(o.angle||0);ctx.strokeStyle=objectSelected?"#e07a22":"#263548";ctx.lineWidth=2/scale;if(o.type==="door"){let hinge=o.hinge==="right"?o.w/2:-o.w/2;ctx.beginPath();ctx.moveTo(hinge,0);ctx.lineTo(hinge,o.swing==="out"?-o.w:o.w);ctx.stroke();ctx.beginPath();ctx.arc(hinge,0,o.w,o.swing==="out"?-Math.PI/2:0,o.swing==="out"?0:Math.PI/2);ctx.stroke()}else if(o.type==="window"){ctx.beginPath();ctx.moveTo(-o.w/2,-3);ctx.lineTo(o.w/2,-3);ctx.moveTo(-o.w/2,3);ctx.lineTo(o.w/2,3);for(let i=1;i<o.panels;i++){let x=-o.w/2+o.w*i/o.panels;ctx.moveTo(x,-5);ctx.lineTo(x,5)}ctx.stroke()}else if(o.type==="stair"){ctx.strokeRect(-o.w/2,-o.l/2,o.w,o.l);for(let y=-o.l/2+15;y<o.l/2;y+=15){ctx.beginPath();ctx.moveTo(-o.w/2,y);ctx.lineTo(o.w/2,y);ctx.stroke()}}else{ctx.fillStyle="#263548";ctx.fillText(o.text,0,0)}if(objectSelected){ctx.save();ctx.strokeStyle="#e07a22";ctx.lineWidth=1.5/scale;ctx.setLineDash([4/scale,3/scale]);if(o.type==="door")ctx.strokeRect(-o.w/2-8,-o.w-8,o.w+16,o.w+16);else if(o.type==="window")ctx.strokeRect(-o.w/2-8,-12,o.w+16,24);else ctx.strokeRect(-o.w/2-8,-(o.l||o.w)/2-8,o.w+16,(o.l||o.w)+16);ctx.setLineDash([]);ctx.restore()}ctx.restore()});if(draft){ctx.strokeStyle="#2676c8";ctx.setLineDash([5,4]);ctx.beginPath();ctx.moveTo(draft.a.x,draft.a.y);ctx.lineTo(draft.b.x,draft.b.y);ctx.stroke();ctx.setLineDash([])}ctx.restore();$("summary").textContent="Rooms: 0 · Total area: 0.00 sqft (room detection in next build step)"}function screenPoint(e){let r=canvas.getBoundingClientRect();return{x:e.clientX-r.left,y:e.clientY-r.top}}
 function point(e){let p=screenPoint(e);return{x:(p.x-offset.x)/scale,y:(p.y-offset.y)/scale}}
 function clampScale(v){return Math.max(.2,Math.min(5,v))}
 function zoomAt(factor,cx=canvas.clientWidth/2,cy=canvas.clientHeight/2){
@@ -66,13 +66,42 @@ const activePointers=new Map();let gestureBase=null;
 function midpoint(pts){return{x:(pts[0].x+pts[1].x)/2,y:(pts[0].y+pts[1].y)/2}}
 function distance(pts){return Math.hypot(pts[1].x-pts[0].x,pts[1].y-pts[0].y)}
 function hitTest(p){
- let best=null,limit=18/scale;
- floor().objects.forEach((o,i)=>{
-  let d=Math.hypot(p.x-o.x,p.y-o.y);
-  if(d<limit){limit=d;best={kind:"object",index:i}}
- });
+ // Test objects using their complete symbol bounds in object-local coordinates.
+ // This makes the door swing arc and the full window symbol selectable, not just its anchor.
+ const tolerance= Math.max(14/scale, 8);
+ for(let i=floor().objects.length-1;i>=0;i--){
+  const o=floor().objects[i];
+  const dx=p.x-o.x,dy=p.y-o.y,angle=-(o.angle||0);
+  const lx=dx*Math.cos(angle)-dy*Math.sin(angle);
+  const ly=dx*Math.sin(angle)+dy*Math.cos(angle);
+  const half=(o.w||0)/2;
+  let hit=false;
+  if(o.type==="door"){
+   // Door leaf and swing arc, with a forgiving touch target around both.
+   const hinge=o.hinge==="right"?half:-half;
+   const leafX=hinge;
+   const leafY=o.swing==="out"?-(o.w||0):(o.w||0);
+   const leafDistance=Math.hypot(lx-leafX,ly-leafY);
+   const radius=Math.hypot(lx-hinge,ly);
+   const inSwingBox=Math.abs(lx-hinge)<= (o.w||0)+tolerance &&
+     Math.abs(ly)<= (o.w||0)+tolerance;
+   hit=leafDistance<=tolerance || (inSwingBox && Math.abs(radius-(o.w||0))<=tolerance*1.8);
+   // Also allow tapping close to the door opening line itself.
+   hit=hit || (Math.abs(ly)<=tolerance && Math.abs(lx)<=half+tolerance);
+  }else if(o.type==="window"){
+   hit=Math.abs(lx)<=half+tolerance && Math.abs(ly)<=12+tolerance;
+  }else if(o.type==="stair"){
+   hit=Math.abs(lx)<=((o.w||0)/2)+tolerance && Math.abs(ly)<=((o.l||0)/2)+tolerance;
+  }else{
+   hit=Math.abs(lx)<=Math.max(30,tolerance*2) && Math.abs(ly)<=Math.max(20,tolerance*2);
+  }
+  if(hit)return {kind:"object",index:i};
+ }
+ // Walls are tested after objects so an object sitting on a wall can be selected.
+ let best=null,limit=Math.max(18/scale,8);
  floor().walls.forEach((w,i)=>{
-  let dx=w.b.x-w.a.x,dy=w.b.y-w.a.y,t=Math.max(0,Math.min(1,((p.x-w.a.x)*dx+(p.y-w.a.y)*dy)/(dx*dx+dy*dy||1)));
+  let dx=w.b.x-w.a.x,dy=w.b.y-w.a.y;
+  let t=Math.max(0,Math.min(1,((p.x-w.a.x)*dx+(p.y-w.a.y)*dy)/(dx*dx+dy*dy||1)));
   let d=Math.hypot(p.x-(w.a.x+t*dx),p.y-(w.a.y+t*dy));
   if(d<limit){limit=d;best={kind:"wall",index:i}}
  });
