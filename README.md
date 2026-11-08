@@ -32,3 +32,10 @@ Deploy with GitHub Pages: Settings → Pages → Deploy from a branch → main �
 - Tap **Select**, then tap a wall or object to select it; tap **Delete** to remove it.
 - **Undo** reverses the most recent wall/object addition or deletion (up to 50 actions).
 - Tap **Reset view** to return to the default canvas view.
+
+
+## V2.3 scale, grid and object properties
+- Grid is drawn across the full visible workspace and follows pan/zoom.
+- Internal geometry uses millimetres; input/display remains ft'inch; area remains sqft.
+- Door/window can be selected and edited for width and position along its host wall.
+- Door supports hinge side and inward/outward swing; window supports 1–6 panels.
