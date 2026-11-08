@@ -1,0 +1,10 @@
+{
+  "name": "My Site Measurement",
+  "short_name": "Site Measure",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#f4f5f2",
+  "theme_color": "#17211d",
+  "description": "Aplikasi rekod ukuran dan sketch tapak untuk interior design."
+}

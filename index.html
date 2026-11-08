@@ -1,0 +1,105 @@
+<!doctype html>
+<html lang="ms">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#17211d">
+  <meta name="description" content="Aplikasi rekod ukuran dan sketch tapak untuk interior design dan renovation.">
+  <link rel="manifest" href="./manifest.webmanifest">
+  <link rel="stylesheet" href="./style.css">
+  <title>My Site Measurement</title>
+</head>
+<body>
+<header>
+  <div class="head">
+    <div><div class="brand">MY SITE MEASUREMENT</div><div class="sub">SITE RECORD · INTERIOR DESIGN</div></div>
+    <span class="pill" id="saveState">Local save</span>
+  </div>
+  <nav id="tabs">
+    <button class="active" data-tab="home">Overview</button>
+    <button data-tab="project">Project</button>
+    <button data-tab="rooms">Rooms</button>
+    <button data-tab="sketch">Hand Sketch</button>
+    <button data-tab="photos">Photos & Notes</button>
+    <button data-tab="export">Export</button>
+  </nav>
+</header>
+<main>
+  <section id="home" class="page">
+    <h1>Site workspace</h1><p>Rekod ukuran site dengan cepat, terus dari telefon atau tablet.</p>
+    <div class="card">
+      <div class="row"><div><h2 id="homeProject">Belum ada projek</h2><p id="homeMeta">Cipta projek untuk mula merekod.</p></div><span class="pill">ACTIVE</span></div>
+      <div class="stats">
+        <div class="stat"><span class="muted">Ruang</span><strong id="countRooms">0</strong></div>
+        <div class="stat"><span class="muted">Ukuran</span><strong id="countMeasures">0</strong></div>
+        <div class="stat"><span class="muted">Foto</span><strong id="countPhotos">0</strong></div>
+      </div>
+      <div class="actions"><button data-go="project">+ Project details</button><button class="secondary" data-go="rooms">+ Add measurement</button></div>
+    </div>
+    <div class="card"><h2>Aliran kerja ringkas</h2>
+      <div class="item">1. Cipta projek dan maklumat pelanggan.</div>
+      <div class="item">2. Tambah ruang seperti Kitchen, Living atau Bedroom.</div>
+      <div class="item">3. Masukkan ukuran manual dan lakar pelan kasar menggunakan stylus.</div>
+      <div class="item">4. Tambah foto, nota tapak dan eksport rekod.</div>
+    </div>
+  </section>
+
+  <section id="project" class="page hidden">
+    <h1>Project details</h1><p>Maklumat asas lawatan tapak.</p>
+    <div class="card">
+      <label>Nama projek</label><input id="pName" placeholder="Contoh: Renovation Rumah Taman...">
+      <label>Nama pelanggan</label><input id="pClient" placeholder="Nama pelanggan">
+      <label>Alamat / lokasi site</label><textarea id="pAddress" placeholder="Alamat projek"></textarea>
+      <div class="grid"><div><label>Tarikh site visit</label><input id="pDate" type="date"></div><div><label>Disediakan oleh</label><input id="pBy" placeholder="Nama designer"></div></div>
+      <label>Nota projek</label><textarea id="pNotes" placeholder="Skop kerja / perkara penting"></textarea>
+      <div class="actions"><button id="saveProject">Simpan projek</button></div>
+    </div>
+  </section>
+
+  <section id="rooms" class="page hidden">
+    <h1>Rooms & measurements</h1><p>Setiap ruang mempunyai rekod ukuran tersendiri.</p>
+    <div class="card"><h2>Tambah ruang</h2>
+      <label>Nama ruang</label><input id="rName" placeholder="Contoh: Kitchen">
+      <label>Kategori</label><select id="rType"><option>General</option><option>Kitchen</option><option>Living</option><option>Bedroom</option><option>Bathroom</option><option>Dining</option><option>Outdoor</option><option>Other</option></select>
+      <div class="actions"><button id="addRoom">+ Tambah ruang</button></div>
+    </div>
+    <div id="roomList"></div>
+  </section>
+
+  <section id="sketch" class="page hidden">
+    <h1>Hand sketch</h1><p>Lukis menggunakan jari atau stylus. Sesuai untuk pelan kasar, pintu, tingkap, column dan nota ukuran.</p>
+    <div class="card">
+      <label>Pilih ruang</label><select id="sketchRoom"></select>
+      <div class="tools"><button id="penTool">Pen</button><button class="secondary" id="eraserTool">Eraser</button><button class="secondary" id="undoSketch">Undo</button><button class="secondary" id="clearSketch">Clear</button></div>
+      <canvas id="board" width="1200" height="840"></canvas>
+      <div class="actions"><button id="saveSketch">Simpan sketch</button><button class="secondary" id="downloadSketch">Muat turun PNG</button></div>
+      <p class="muted">Tip: Gunakan orientasi landscape pada tablet untuk ruang melukis lebih luas.</p>
+    </div>
+    <div class="card"><h3>Sketch tersimpan</h3><div id="sketchSaved" class="muted">Belum ada sketch.</div></div>
+  </section>
+
+  <section id="photos" class="page hidden">
+    <h1>Photos & site notes</h1><p>Simpan gambar keadaan tapak dan catatan teknikal.</p>
+    <div class="card">
+      <label>Pilih ruang (optional)</label><select id="photoRoom"></select>
+      <label>Ambil / pilih gambar</label><input id="photoFile" type="file" accept="image/*" capture="environment">
+      <label>Nota gambar</label><textarea id="photoNote" placeholder="Contoh: Lokasi DB box, paip air, beam, keadaan dinding..."></textarea>
+      <div class="actions"><button id="addPhoto">Simpan foto & nota</button></div>
+    </div>
+    <div id="photoList"></div>
+  </section>
+
+  <section id="export" class="page hidden">
+    <h1>Export & backup</h1><p>Eksport salinan rekod untuk simpanan dan rujukan.</p>
+    <div class="card"><h2>Backup data</h2><p>Muat turun semua maklumat projek, ukuran, nota dan sketch dalam fail JSON.</p>
+      <div class="actions"><button id="exportJSON">Export JSON backup</button><button class="secondary" id="importButton">Import backup</button><input id="importFile" class="hidden" type="file" accept="application/json"></div>
+    </div>
+    <div class="card"><h2>Measurement CSV</h2><p>Fail CSV boleh dibuka dalam Excel atau Google Sheets.</p><button id="exportCSV">Export ukuran CSV</button></div>
+    <div class="card"><h2>Print / PDF</h2><p>Gunakan fungsi Print pada peranti dan pilih “Save as PDF”.</p><button id="printReport">Print / Save PDF</button></div>
+    <div class="card"><h2>Data & sync</h2><p>Data disimpan pada peranti ini. Sync antara peranti memerlukan backend/cloud dan akaun pengguna; fungsi ini belum diaktifkan dalam versi awal.</p><button class="danger" id="resetAll">Padam semua data peranti</button></div>
+  </section>
+</main>
+<footer>My Site Measurement · Simpanan setempat pada peranti ini</footer>
+<script type="module" src="./app.js"></script>
+</body>
+</html>
