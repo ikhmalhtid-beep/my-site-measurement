@@ -66,3 +66,11 @@ The parser converts the accepted input to millimetres internally and rejects inv
 - Selected object symbols change to cyan (#22D3EE).
 - Selected symbol line weight is increased for clearer visual feedback.
 - The selection outline also uses cyan.
+
+
+## V2.3.5 door placement and swing workflow
+- Door tool tap on a wall opens Door Specification before creating a door.
+- Confirm enters a cyan door preview. Drag along the same wall to set its position.
+- Release to finalize the door placement.
+- After selecting an installed door, drag to either side to change inward/outward swing. Its position on the wall stays fixed.
+- Window placement/edit remains unchanged.

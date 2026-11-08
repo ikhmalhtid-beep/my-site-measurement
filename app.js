@@ -38,11 +38,14 @@
  if(!hasFeet && !hasInches) return NaN;
  if(!Number.isFinite(feet)||!Number.isFinite(inches)||feet<0||inches<0||inches>=12) return NaN;
  return (feet*12+inches)*25.4;
-}function fmt(mm){let n=mm/25.4,f=Math.floor(n/12),i=Math.round((n-f*12)*16)/16;if(i>=12){f++;i=0}return f+"' "+i+'"'}function draw(){if(!$("work")||$("work").hidden)return;let w=canvas.clientWidth,h=canvas.clientHeight;ctx.clearRect(0,0,w,h);ctx.save();ctx.translate(offset.x,offset.y);ctx.scale(scale,scale);ctx.strokeStyle="#e9edf2";ctx.lineWidth=1/scale;
+}function fmt(mm){let n=mm/25.4,f=Math.floor(n/12),i=Math.round((n-f*12)*16)/16;if(i>=12){f++;i=0}return f+"' "+i+'"'}let pendingDoorPlacement=null,doorPositioning=false,doorPreview=null,swingDrag=null;
+function draw(){if(!$("work")||$("work").hidden)return;let w=canvas.clientWidth,h=canvas.clientHeight;ctx.clearRect(0,0,w,h);ctx.save();ctx.translate(offset.x,offset.y);ctx.scale(scale,scale);ctx.strokeStyle="#e9edf2";ctx.lineWidth=1/scale;
 let left=(-offset.x)/scale,top=(-offset.y)/scale,right=(w-offset.x)/scale,bottom=(h-offset.y)/scale;
 let step=25,x0=Math.floor(left/step)*step,y0=Math.floor(top/step)*step;
 for(let x=x0;x<=right+step;x+=step){ctx.beginPath();ctx.moveTo(x,top-step);ctx.lineTo(x,bottom+step);ctx.stroke()}
-for(let y=y0;y<=bottom+step;y+=step){ctx.beginPath();ctx.moveTo(left-step,y);ctx.lineTo(right+step,y);ctx.stroke()}floor().walls.forEach((a,wi)=>{ctx.strokeStyle=(selected&&selected.kind==="wall"&&selected.index===wi)?"#e07a22":"#202938";ctx.lineWidth=2/scale;ctx.beginPath();ctx.moveTo(a.a.x,a.a.y);ctx.lineTo(a.b.x,a.b.y);ctx.stroke();ctx.fillStyle="#303d50";ctx.font=`${12/scale}px system-ui`;ctx.fillText(fmt(a.len),(a.a.x+a.b.x)/2,(a.a.y+a.b.y)/2-7/scale)});floor().objects.forEach((o,oi)=>{ctx.save();const objectSelected=!!(selected&&selected.kind==="object"&&selected.index===oi);const objectColor=objectSelected?"#22D3EE":"#263548";ctx.strokeStyle=objectColor;ctx.translate(o.x,o.y);ctx.rotate(o.angle||0);ctx.strokeStyle=objectColor;ctx.fillStyle=objectColor;ctx.lineWidth=2/scale;if(o.type==="door"){let hinge=o.hinge==="right"?o.w/2:-o.w/2;ctx.beginPath();ctx.moveTo(hinge,0);ctx.lineTo(hinge,o.swing==="out"?-o.w:o.w);ctx.stroke();ctx.beginPath();ctx.arc(hinge,0,o.w,o.swing==="out"?-Math.PI/2:0,o.swing==="out"?0:Math.PI/2);ctx.stroke()}else if(o.type==="window"){ctx.beginPath();ctx.moveTo(-o.w/2,-3);ctx.lineTo(o.w/2,-3);ctx.moveTo(-o.w/2,3);ctx.lineTo(o.w/2,3);for(let i=1;i<o.panels;i++){let x=-o.w/2+o.w*i/o.panels;ctx.moveTo(x,-5);ctx.lineTo(x,5)}ctx.stroke()}else if(o.type==="stair"){ctx.strokeRect(-o.w/2,-o.l/2,o.w,o.l);for(let y=-o.l/2+15;y<o.l/2;y+=15){ctx.beginPath();ctx.moveTo(-o.w/2,y);ctx.lineTo(o.w/2,y);ctx.stroke()}}else{ctx.fillStyle="#263548";ctx.fillText(o.text,0,0)}if(objectSelected){ctx.save();ctx.strokeStyle="#22D3EE";ctx.lineWidth=2.5/scale;ctx.setLineDash([4/scale,3/scale]);if(o.type==="door")ctx.strokeRect(-o.w/2-8,-o.w-8,o.w+16,o.w+16);else if(o.type==="window")ctx.strokeRect(-o.w/2-8,-12,o.w+16,24);else ctx.strokeRect(-o.w/2-8,-(o.l||o.w)/2-8,o.w+16,(o.l||o.w)+16);ctx.setLineDash([]);ctx.restore()}ctx.restore()});if(draft){ctx.strokeStyle="#2676c8";ctx.setLineDash([5,4]);ctx.beginPath();ctx.moveTo(draft.a.x,draft.a.y);ctx.lineTo(draft.b.x,draft.b.y);ctx.stroke();ctx.setLineDash([])}ctx.restore();$("summary").textContent="Rooms: 0 · Total area: 0.00 sqft (room detection in next build step)"}function screenPoint(e){let r=canvas.getBoundingClientRect();return{x:e.clientX-r.left,y:e.clientY-r.top}}
+for(let y=y0;y<=bottom+step;y+=step){ctx.beginPath();ctx.moveTo(left-step,y);ctx.lineTo(right+step,y);ctx.stroke()}floor().walls.forEach((a,wi)=>{ctx.strokeStyle=(selected&&selected.kind==="wall"&&selected.index===wi)?"#e07a22":"#202938";ctx.lineWidth=2/scale;ctx.beginPath();ctx.moveTo(a.a.x,a.a.y);ctx.lineTo(a.b.x,a.b.y);ctx.stroke();ctx.fillStyle="#303d50";ctx.font=`${12/scale}px system-ui`;ctx.fillText(fmt(a.len),(a.a.x+a.b.x)/2,(a.a.y+a.b.y)/2-7/scale)});floor().objects.forEach((o,oi)=>{ctx.save();const objectSelected=!!(selected&&selected.kind==="object"&&selected.index===oi);const objectColor=objectSelected?"#22D3EE":"#263548";ctx.strokeStyle=objectColor;ctx.translate(o.x,o.y);ctx.rotate(o.angle||0);ctx.strokeStyle=objectColor;ctx.fillStyle=objectColor;ctx.lineWidth=2/scale;if(o.type==="door"){let hinge=o.hinge==="right"?o.w/2:-o.w/2;ctx.beginPath();ctx.moveTo(hinge,0);ctx.lineTo(hinge,o.swing==="out"?-o.w:o.w);ctx.stroke();ctx.beginPath();ctx.arc(hinge,0,o.w,o.swing==="out"?-Math.PI/2:0,o.swing==="out"?0:Math.PI/2);ctx.stroke()}else if(o.type==="window"){ctx.beginPath();ctx.moveTo(-o.w/2,-3);ctx.lineTo(o.w/2,-3);ctx.moveTo(-o.w/2,3);ctx.lineTo(o.w/2,3);for(let i=1;i<o.panels;i++){let x=-o.w/2+o.w*i/o.panels;ctx.moveTo(x,-5);ctx.lineTo(x,5)}ctx.stroke()}else if(o.type==="stair"){ctx.strokeRect(-o.w/2,-o.l/2,o.w,o.l);for(let y=-o.l/2+15;y<o.l/2;y+=15){ctx.beginPath();ctx.moveTo(-o.w/2,y);ctx.lineTo(o.w/2,y);ctx.stroke()}}else{ctx.fillStyle="#263548";ctx.fillText(o.text,0,0)}if(objectSelected){ctx.save();ctx.strokeStyle="#22D3EE";ctx.lineWidth=2.5/scale;ctx.setLineDash([4/scale,3/scale]);if(o.type==="door")ctx.strokeRect(-o.w/2-8,-o.w-8,o.w+16,o.w+16);else if(o.type==="window")ctx.strokeRect(-o.w/2-8,-12,o.w+16,24);else ctx.strokeRect(-o.w/2-8,-(o.l||o.w)/2-8,o.w+16,(o.l||o.w)+16);ctx.setLineDash([]);ctx.restore()}ctx.restore()});
+if(doorPositioning&&doorPreview){ctx.save();ctx.translate(doorPreview.x,doorPreview.y);ctx.rotate(doorPreview.angle||0);ctx.strokeStyle="#22D3EE";ctx.lineWidth=3/scale;let half=doorPreview.w/2,hinge=doorPreview.hinge==="right"?half:-half;ctx.beginPath();ctx.moveTo(hinge,0);ctx.lineTo(hinge,doorPreview.swing==="out"?-doorPreview.w:doorPreview.w);ctx.stroke();ctx.beginPath();ctx.arc(hinge,0,doorPreview.w,doorPreview.swing==="out"?-Math.PI/2:0,doorPreview.swing==="out"?0:Math.PI/2);ctx.stroke();ctx.restore()}
+if(draft){ctx.strokeStyle="#2676c8";ctx.setLineDash([5,4]);ctx.beginPath();ctx.moveTo(draft.a.x,draft.a.y);ctx.lineTo(draft.b.x,draft.b.y);ctx.stroke();ctx.setLineDash([])}ctx.restore();$("summary").textContent="Rooms: 0 · Total area: 0.00 sqft (room detection in next build step)"}function screenPoint(e){let r=canvas.getBoundingClientRect();return{x:e.clientX-r.left,y:e.clientY-r.top}}
 function point(e){let p=screenPoint(e);return{x:(p.x-offset.x)/scale,y:(p.y-offset.y)/scale}}
 function clampScale(v){return Math.max(.2,Math.min(5,v))}
 function zoomAt(factor,cx=canvas.clientWidth/2,cy=canvas.clientHeight/2){
@@ -58,7 +61,13 @@ function showObjectEditor(index){
  $("hinge").value=o.hinge||"left";$("swing").value=o.swing||"in";$("panels").value=String(o.panels||2);$("objectDialog").showModal();
 }
 function placeObjectOnWall(type,n){
- snapshot();floor().objects.push({type,x:n.x,y:n.y,angle:n.angle,w:type==="door"?914.4:1219.2,panels:2,wallIndex:n.wallIndex,t:n.t,hinge:"left",swing:"in"});
+ if(type==="door"){
+  pendingDoorPlacement={...n};editingObjectIndex=null;
+  $("objectDialogTitle").textContent="Door specification";$("objectWidth").value=`3' 0"`;$("objectPosition").value="";
+  $("hingeRow").hidden=false;$("swingRow").hidden=false;$("panelRow").hidden=true;
+  $("hinge").value="left";$("swing").value="in";$("objectDialog").showModal();return;
+ }
+ snapshot();floor().objects.push({type,x:n.x,y:n.y,angle:n.angle,w:1219.2,panels:2,wallIndex:n.wallIndex,t:n.t,hinge:"left",swing:"in"});
  save();draw();showObjectEditor(floor().objects.length-1);
 }
 let start=null;
@@ -134,6 +143,11 @@ canvas.addEventListener("pointerdown",e=>{
  }
  if(activePointers.size>2)return;
  start=point(e);
+ if(doorPositioning&&doorPreview)return;
+ if(tool==="select"&&selected&&selected.kind==="object"){
+  const obj=floor().objects[selected.index];
+  if(obj&&obj.type==="door"){swingDrag={index:selected.index,start:point(e),moved:false};return;}
+ }
  if(tool==="wall")draft={a:start,b:start};
  draw();
 });
@@ -147,8 +161,12 @@ canvas.addEventListener("pointermove",e=>{
   offset.y=mid.y-gestureBase.world.y*scale;
   draw();return;
  }
- if(activePointers.size!==1||!start||!draft)return;
- let p=point(e),dx=p.x-draft.a.x,dy=p.y-draft.a.y;
+ if(activePointers.size!==1)return;
+ let p=point(e);
+ if(doorPositioning&&doorPreview){let n=nearest(p);if(n&&n.wallIndex===doorPreview.wallIndex){doorPreview={...doorPreview,...n};draw()}return;}
+ if(swingDrag){let obj=floor().objects[swingDrag.index];if(!obj)return;let dx=p.x-obj.x,dy=p.y-obj.y,localY=-dx*Math.sin(obj.angle||0)+dy*Math.cos(obj.angle||0);if(Math.hypot(p.x-swingDrag.start.x,p.y-swingDrag.start.y)>5/scale)swingDrag.moved=true;if(swingDrag.moved){obj.swing=localY<0?"out":"in";draw()}return;}
+ if(!start||!draft)return;
+ let dx=p.x-draft.a.x,dy=p.y-draft.a.y;
  if($("snap").checked){if(Math.abs(dx)>Math.abs(dy))dy=0;else dx=0}
  draft.b={x:draft.a.x+dx,y:draft.a.y+dy};draw();
 });
@@ -156,7 +174,9 @@ function finishPointer(e){
  let wasGesture=activePointers.size>=2;
  activePointers.delete(e.pointerId);
  if(activePointers.size<2)gestureBase=null;
- if(wasGesture){start=null;draft=null;draw();return;}
+ if(wasGesture){start=null;draft=null;doorPositioning=false;draw();return;}
+ if(doorPositioning&&doorPreview){let n=nearest(point(e));if(n&&n.wallIndex===doorPreview.wallIndex){snapshot();floor().objects.push({...doorPreview,x:n.x,y:n.y,angle:n.angle,t:n.t});selected={kind:"object",index:floor().objects.length-1};save()}doorPositioning=false;doorPreview=null;start=null;draw();return;}
+ if(swingDrag){let sd=swingDrag;swingDrag=null;if(sd.moved){snapshot();save();selected={kind:"object",index:sd.index}}else{selected=hitTest(point(e))}start=null;draw();return;}
  if(!start)return;
  let p=point(e);
  if(tool==="select"){
@@ -178,8 +198,18 @@ canvas.addEventListener("pointerup",finishPointer);
 canvas.addEventListener("pointercancel",finishPointer);
 canvas.addEventListener("wheel",e=>{e.preventDefault();let p=screenPoint(e);zoomAt(e.deltaY<0?1.12:1/1.12,p.x,p.y)},{passive:false});
 $("zoomReset").onclick=resetView;$("editObject").onclick=()=>{if(!selected||selected.kind!=="object")return alert("Pilih pintu atau tingkap dahulu.");showObjectEditor(selected.index)};
-$("objectCancel").onclick=()=>$("objectDialog").close();
-$("objectForm").addEventListener("submit",e=>{e.preventDefault();let o=floor().objects[editingObjectIndex];if(!o)return;let w=parse($("objectWidth").value);if(!Number.isFinite(w)||w<=0)return alert("Masukkan ukuran seperti 3' 0\".");let pos=$("objectPosition").value.trim()?parse($("objectPosition").value):NaN;if($("objectPosition").value.trim()&&!Number.isFinite(pos))return alert("Semak posisi dari hujung dinding.");snapshot();o.w=w;if(o.type==="door"){o.hinge=$("hinge").value;o.swing=$("swing").value}else{o.panels=+$("panels").value}let wall=floor().walls[o.wallIndex];if(wall&&Number.isFinite(pos)){let t=Math.max(0,Math.min(1,pos/(wall.len||1)));o.t=t;let dx=wall.b.x-wall.a.x,dy=wall.b.y-wall.a.y;o.x=wall.a.x+dx*t;o.y=wall.a.y+dy*t;o.angle=Math.atan2(dy,dx)}save();$("objectDialog").close();draw()});
+$("objectCancel").onclick=()=>{pendingDoorPlacement=null;$("objectDialog").close()};
+$("objectForm").addEventListener("submit",e=>{
+ e.preventDefault();let w=parse($("objectWidth").value);
+ if(!Number.isFinite(w)||w<=0)return alert(`Masukkan ukuran seperti 3' 0"`);
+ if(pendingDoorPlacement){const n=pendingDoorPlacement;doorPreview={type:"door",x:n.x,y:n.y,angle:n.angle,w,wallIndex:n.wallIndex,t:n.t,hinge:$("hinge").value,swing:$("swing").value};pendingDoorPlacement=null;doorPositioning=true;$("objectDialog").close();draw();return;}
+ let o=floor().objects[editingObjectIndex];if(!o)return;
+ let pos=$("objectPosition").value.trim()?parse($("objectPosition").value):NaN;
+ if($("objectPosition").value.trim()&&!Number.isFinite(pos))return alert("Semak posisi dari hujung dinding.");
+ snapshot();o.w=w;if(o.type==="door"){o.hinge=$("hinge").value;o.swing=$("swing").value}else{o.panels=+$("panels").value}
+ let wall=floor().walls[o.wallIndex];if(wall&&Number.isFinite(pos)){let t=Math.max(0,Math.min(1,pos/(wall.len||1)));o.t=t;let dx=wall.b.x-wall.a.x,dy=wall.b.y-wall.a.y;o.x=wall.a.x+dx*t;o.y=wall.a.y+dy*t;o.angle=Math.atan2(dy,dx)}
+ save();$("objectDialog").close();draw()
+});
 
 $("delete").onclick=doDelete;
 $("undo").onclick=doUndo;
