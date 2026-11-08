@@ -1,1 +1,11 @@
 *{box-sizing:border-box}body{margin:0;font:14px system-ui;color:#202938;background:#f6f8fa}header{height:58px;background:white;border-bottom:1px solid #e3e7ed;padding:16px 20px;font-weight:750;display:flex;gap:12px;align-items:center}main{max-width:950px;margin:50px auto;padding:0 20px}h1{font-size:30px}button{border:0;border-radius:8px;padding:10px 14px;background:#e9edf2;color:#253247;font-weight:650;cursor:pointer}.primary,#new{background:#253247;color:white}#projects{display:flex;gap:12px;flex-wrap:wrap;margin-top:25px}.card{background:white;border:1px solid #e1e6ec;border-radius:12px;padding:18px;min-width:230px;cursor:pointer}#work{height:100vh;display:flex;flex-direction:column}#work header{justify-content:space-between}nav{display:flex;gap:5px;padding:8px;background:white;overflow:auto;border-bottom:1px solid #e1e6ec}nav button{white-space:nowrap}nav button.active{background:#dce5f0}.floors{display:flex;align-items:center;gap:8px;padding:8px 12px;background:#eef1f5}.unit{margin-left:auto;color:#748092;font-size:12px}#plan{display:block;width:100%;flex:1;min-height:250px;background:white;touch-action:none}footer{padding:9px 14px;background:white;color:#687487;font-size:12px}dialog{border:0;border-radius:14px;padding:22px;width:min(400px,92vw);box-shadow:0 15px 60px #0003}dialog::backdrop{background:#15203377}form{display:grid;gap:13px}label{display:grid;gap:6px;font-weight:600}input,textarea{padding:10px;border:1px solid #d6dde6;border-radius:7px;font:inherit}menu{display:flex;justify-content:flex-end;gap:8px;padding:0;margin:8px 0 0}#floorTabs button{margin-right:4px}.muted{color:#7b8795}@media(max-width:650px){main{margin:25px auto}h1{font-size:25px}.unit{display:none}}
+/* View navigation controls */
+#plan { cursor: crosshair; }
+#plan.pan-mode { cursor: grab; }
+#plan.pan-mode:active { cursor: grabbing; }
+#zoomIn, #zoomOut, #zoomReset { min-width: 42px; }
+
+/* Two-finger canvas navigation; one finger remains for drawing/selecting */
+#plan { touch-action: none; }
+#plan.pan-mode { cursor: default; }
+#delete, #undo { min-width: 64px; }
